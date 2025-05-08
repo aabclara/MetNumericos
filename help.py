@@ -1,4 +1,7 @@
-def plotGraficos(f, intervalo, titulo=None, pontos=5000, figsize=(10,6)):
+import numpy as np
+import matplotlib.pyplot as plt
+
+def plotGraficos(f, intervalo, titulo=None, pontos=5000, figsize=(9,5)):
     import numpy as np
     import matplotlib.pyplot as plt
     """Gera o gráfico de uma função f(x) em um determinado intervalo.
@@ -27,7 +30,7 @@ def plotGraficos(f, intervalo, titulo=None, pontos=5000, figsize=(10,6)):
     plt.axhline(y=0, color='black', linestyle='-')  # Eixo X
     plt.show()
 
-def Bissecao(f, inicio, final, tolerancia=0.0009):
+def Bissecao(f, inicio, final, tolerancia=1e-5):
     contador = 0
 
     if f(inicio) * f(final) >= 0:
@@ -73,7 +76,7 @@ def RegraDescartes(coeficientes):
     return (f"Possíveis raízes positivas: {variacoes_pos}\n"
             f"Possíveis raízes negativas: {variacoes_neg}")
 
-def Secante(f,x0, x1, tol = 1e-6, max_iter = 100):
+def Secante(f, x0, x1, tol = 1e-6, max_iter = 100):
     for i in range(max_iter):
         x2 = x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0))
         if abs(x2 - x1) < tol:
@@ -82,21 +85,22 @@ def Secante(f,x0, x1, tol = 1e-6, max_iter = 100):
         x1 = x2
     return None # se não converge
 
-def falsaPosicao(f, a, b, tol = 1e-6, max_iter = 100):
-    """
-    Encontra a raiz, no intervalo [x0, x1], da equação definida em f.
-    Parada: no máximo, max_iter, iterações ou diferença entre os limites do intervalo menor que tol.
-    """
+def falsa_posicao(f, a, b, tol=1e-6, max_iter=100):
+    # Criação de variáveis para o relatório
+    inicio = a
+    fim = b
+    qtd_iteracao = 0
+
     if f(a) * f(b) >= 0:
-        print("Erro! f(a) e f(b) devem ter sinais opostos!")
+        print("ops! f(a) e f(b) devem ter sinais opostos")
         return None
-    
     for i in range(max_iter):
-        c = (a * f(b) - b*f(a)) / (f(b)-f(a))
-        if abs(f(c)) < tol:
-            return c
+        c = (a * f(b) - b * f(a)) / (f(b) - f(a))
+        qtd_iteracao += 1
+        if abs(f(c)) < tol and i==99:
+            return c, qtd_iteracao
         if f(c) * f(a) < 0:
             b = c
         else:
-            a = c
-        return None #não converge
+            a = c   
+    return None
