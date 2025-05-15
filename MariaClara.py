@@ -177,4 +177,3 @@ def grafico_comparativo(f,a,b,tol):
     plt.grid(True)
     plt.yscale("log")
     plt.show()
-
