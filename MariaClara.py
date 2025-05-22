@@ -177,3 +177,28 @@ def grafico_comparativo(f,a,b,tol):
     plt.grid(True)
     plt.yscale("log")
     plt.show()
+
+def multiplaRegressaoLinear(X, y):
+
+    X_b = np.c_[np.ones(X.shape[0]), X]
+
+    try:
+        coef = np.linalg.inv(X_b.T @ X_b) @ X_b.T @ y
+    except np.linalg.LinAlgError:
+        print("Erro: A matriz X.T @ X é singular. Não é possível calcular a inversa.")
+        print("Isso pode ocorrer se houver multicolinearidade perfeita nas variáveis independentes.")
+        return None, None
+
+    Ypred = X_b @ coef
+
+    R_ss = np.sum((y - Ypred)**2)
+
+    Ymedia = np.mean(y)
+    total_ss = np.sum((y - Ymedia)**2)
+
+    if total_ss == 0:
+        Rquadrado = 1.0 if R_ss == 0 else 0.0 
+    else:
+        Rquadrado = 1 - (R_ss / total_ss)
+
+    return coef, Rquadrado
