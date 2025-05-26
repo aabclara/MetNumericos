@@ -26,7 +26,7 @@ def plotGraficos(f, intervalo, titulo=None, pontos=5000, figsize=(9,5)):
     plt.axhline(y=0, color='black', linestyle='-')  # Eixo X
     plt.show()
 
-def Bissecao(f, inicio, final, tolerancia=1e-5):
+def Bissecao(f, inicio, final, tolerancia=1e-5, max_iteracoes=1000):
     """
     Encontra uma raiz de f(x) no intervalo [inicio, final] usando Bisseção.
 
@@ -39,12 +39,11 @@ def Bissecao(f, inicio, final, tolerancia=1e-5):
 
     if f(inicio) * f(final) >= 0:
         print("Erro: f(inicio) e f(final) devem ter sinais opostos.")
-        return None, 0
-
-    while True:
+        iteracoes = 0
+    while iteracoes < max_iteracoes and abs(final - inicio) > tolerancia:
         pontoMeio = (inicio + final) / 2
         resultado = f(pontoMeio)
-        contador += 1
+        iteracoes += 1
 
         if abs(resultado) < tolerancia:
             return pontoMeio, contador
@@ -53,6 +52,7 @@ def Bissecao(f, inicio, final, tolerancia=1e-5):
             final = pontoMeio
         else:
             inicio = pontoMeio
+        return (inicio + final) / 2, iteracoes
 
 def RegraDescartes(coeficientes):
     """
