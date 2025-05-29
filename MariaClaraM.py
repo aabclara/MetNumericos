@@ -1,12 +1,55 @@
+"""
+FUNÇÕES DISPONÍVEIS:
+
+1. bissecao(f, a, b, tol=1e-6, max_iter=100)
+    - Encontra uma raiz de f(x) no intervalo [a, b] usando o Método da Bisseção.
+    - Parâmetros:
+        f : função (ex: lambda x: x**2 - 4)
+        a, b : extremos do intervalo com f(a) * f(b) < 0
+        tol : tolerância para o erro
+        max_iter : número máximo de iterações
+    - Retorno: raiz aproximada de f(x) = 0
+
+2. falsa_posicao(f, a, b, tol=1e-6, max_iter=100)
+    - Método da Falsa Posição (Regula Falsi) para encontrar raiz de f(x).
+    - Parâmetros iguais aos do método da bisseção.
+    - Retorno: raiz aproximada de f(x) = 0
+
+3. secante(f, x0, x1, tol=1e-6, max_iter=100)
+    - Método da Secante para encontrar uma raiz de f(x), sem exigir sinal oposto.
+    - Parâmetros:
+        f : função (ex: lambda x: x**2 - 4)
+        x0, x1 : aproximações iniciais
+        tol, max_iter : precisão e limite de iterações
+    - Retorno: raiz aproximada
+
+4. regressao_linear(x, y)
+    - Ajusta uma reta (y = b0 + b1 * x) aos dados usando fórmulas clássicas.
+    - Parâmetros:
+        x : lista ou array com os valores independentes
+        y : lista ou array com os valores dependentes
+    - Retorno:
+        - função lambda para predição (reta ajustada)
+        - R² (coeficiente de determinação)
+
+5. regressao_linear_multipla(X, y)
+    - Realiza regressão linear múltipla com várias variáveis independentes.
+    - Parâmetros:
+        X : matriz 2D com variáveis independentes (formato [n_amostras, n_variáveis])
+        y : vetor com variável dependente (n_amostras,)
+    - Retorno:
+        - coeficientes do modelo (lista com os betas)
+        - intercepto (β₀)
+        - previsões ajustadas pelo modelo (array de y estimado)
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.linear_model import LinearRegression
 
 def bissecao(f, a, b, tol=1e-6, max_iter=1000):
     """
-    Encontra uma raiz aproximada de uma função contínua f(x) no intervalo [a, b]
-    usando o método da bisseção.
-    -----------
     f : function
         Função contínua para a qual se deseja encontrar a raiz.
     a : float
@@ -18,19 +61,9 @@ def bissecao(f, a, b, tol=1e-6, max_iter=1000):
         Valor padrão é 1e-6.
     max_iter : int, opcional
         Número máximo de iterações permitidas. Valor padrão é 1000.
-    --------------
-    O método verifica se há mudança de sinal no intervalo [a, b].
-    Em seguida, divide repetidamente o intervalo ao meio e seleciona o subintervalo
-    onde ocorre a troca de sinal, até que a largura do intervalo seja menor que a tolerância
-    ou o número máximo de iterações seja atingido.
-    --------
-    float ou None
-        Retorna a raiz aproximada encontrada ou None caso a condição inicial
-        f(a) * f(b) >= 0 não seja satisfeita (o método da bisseção não garante raiz nesse caso).
     ---------------
     def f(x):
         return x**3 - 4*x + 1
-
     raiz = bissecao(f, 0, 2)
     print(f"Raiz aproximada: {raiz}")
     """
@@ -49,6 +82,7 @@ def bissecao(f, a, b, tol=1e-6, max_iter=1000):
             a = c
         iteracoes += 1
 
+    print(f"Raiz de f(x) no intervalo é {((a + b) / 2):.3f}")
     return (a + b) / 2
 
 
@@ -72,8 +106,6 @@ def grafico_bissecao(f, a, b):
 ######################
 def secante(f, x0, x1, tol=1e-6, max_iter=1000):
     """
-    Encontra uma raiz aproximada de uma função contínua f(x) usando o método da secante.
-    -----------
     f : function
         Função contínua para a qual se deseja encontrar a raiz.
     x0 : float
@@ -84,10 +116,6 @@ def secante(f, x0, x1, tol=1e-6, max_iter=1000):
         Tolerância para o critério de parada. Valor padrão é 1e-6.
     max_iter : int, opcional
         Número máximo de iterações permitidas. Valor padrão é 1000.
-    --------
-    tuple (float, int)
-        - Raiz aproximada encontrada.
-        - Número de iterações realizadas.
     """
     iteracoes = 0
     while abs(x1 - x0) > tol and iteracoes < max_iter:
@@ -97,7 +125,7 @@ def secante(f, x0, x1, tol=1e-6, max_iter=1000):
         x2 = x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0))
         x0, x1 = x1, x2
         iteracoes += 1
-
+    print(f"Raiz de f(x) pelo método da secante: {x1:.3f} (em {iteracoes} iterações)")
     return x1, iteracoes
 
 def grafico_secante(f, x0, x1):
@@ -122,9 +150,6 @@ def grafico_secante(f, x0, x1):
 #############################
 def falsa_posicao(f, a, b, tol=1e-6, max_iter=1000):
     """
-    Encontra uma raiz aproximada de uma função contínua f(x) no intervalo [a, b]
-    usando o método da falsa posição (regula falsi).
-    -----------
     f : function
         Função contínua para a qual se deseja encontrar a raiz.
     a : float
@@ -135,11 +160,6 @@ def falsa_posicao(f, a, b, tol=1e-6, max_iter=1000):
         Tolerância para o critério de parada. Valor padrão é 1e-6.
     max_iter : int, opcional
         Número máximo de iterações permitidas. Valor padrão é 1000.
-    --------
-    tuple (float, int) ou None
-        - Raiz aproximada encontrada.
-        - Número de iterações realizadas.
-        Retorna None se f(a) * f(b) >= 0 (quando o método não garante raiz no intervalo).
     """
     if f(a) * f(b) >= 0:
         print("O método da falsa posição não garante raiz nesse intervalo.")
@@ -153,6 +173,7 @@ def falsa_posicao(f, a, b, tol=1e-6, max_iter=1000):
         fc = f(c)
 
         if abs(fc) < tol:
+            print(f"Raiz de f(x) pelo método da falsa posição: {c:.3f} (em {iteracoes} iterações)")
             return c, iteracoes
 
         if fa * fc < 0:
@@ -161,6 +182,10 @@ def falsa_posicao(f, a, b, tol=1e-6, max_iter=1000):
             a = c
 
         iteracoes += 1
+
+    c = (a * f(b) - b * f(a)) / (f(b) - f(a))
+    print(f"Raiz de f(x) pelo método da falsa posição: {c:.3f} (em {iteracoes} iterações)")
+    return c, iteracoes
 
     return (a * f(b) - b * f(a)) / (f(b) - f(a)), iteracoes
 
@@ -185,17 +210,10 @@ def grafico_falsa_posicao(f, a, b):
 ###################################
 def regressao_linear(x, y):
     """
-    Ajusta uma reta (modelo de regressão linear simples) aos dados (x, y) usando
-    as fórmulas clássicas para calcular os coeficientes b0 e b1.
-    -----------
     x : list ou array-like de floats
         Valores independentes.
     y : list ou array-like de floats
         Valores dependentes.
-    --------
-    tuple:
-        - função lambda que calcula y dado um x usando a reta ajustada.
-        - coeficiente de determinação R² do ajuste (quanto mais prox de 1 melhor)
     """
     n = len(x)
     if n != len(y) or n == 0:
@@ -222,6 +240,8 @@ def regressao_linear(x, y):
 
     r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
 
+    print(f"Equação ajustada: y = {b0:.4f} + {b1:.4f}x")
+    print(f"Coeficiente de determinação R² = {r2:.4f}")
     return reta, r2
 
 def grafico_regressao_linear(x, y):
@@ -239,18 +259,12 @@ def grafico_regressao_linear(x, y):
 #######################################
 def regressao_polinomial(x, y, grau):
     """
-    Ajusta um polinômio de grau 'grau' aos dados (x, y) usando regressão polinomial.
-    -----------
     x : list ou array-like de floats
         Valores independentes.
     y : list ou array-like de floats
         Valores dependentes.
     grau : int
         Grau do polinômio a ser ajustado.
-    --------
-    tuple:
-        - função que calcula y dado um x usando o polinômio ajustado.
-        - coeficiente de determinação R² do ajuste.
     """
     x = np.array(x)
     y = np.array(y)
@@ -278,7 +292,12 @@ def regressao_polinomial(x, y, grau):
     ss_res = np.sum((y - y_pred)**2)
     r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
 
+    print("Equação ajustada (coeficientes do polinômio):")
+    for i, c in enumerate(coef):
+        print(f"β{i} = {c:.4f}")
+    print(f"Coeficiente de determinação R² = {r2:.4f}")
     return poly_func, r2
+
 
 def grafico_regressao_polinomial(x, y, grau):
     poly_func, r2 = regressao_polinomial(x, y, grau)
@@ -291,3 +310,80 @@ def grafico_regressao_polinomial(x, y, grau):
     plt.legend()
     plt.grid()
     plt.show()
+
+###############################
+def regressao_linear_multipla(X, y):
+    """
+    - X: array 2D (matriz) com variáveis independentes.
+    - y: array 1D com variável dependente.
+    ----
+    - coeficientes: array com os coeficientes das variáveis independentes.
+    - intercepto: valor do intercepto (β0)
+    - previsoes: valores previstos pelo modelo.
+    """
+    # Cria o modelo
+    modelo = LinearRegression()
+
+    # Treina o modelo com os dados
+    modelo.fit(X, y)
+
+    # Obtém os coeficientes e o intercepto
+    coeficientes = modelo.coef_
+    intercepto = modelo.intercept_
+
+    # Faz previsões
+    previsoes = modelo.predict(X)
+
+    print("Modelo ajustado (Regressão Linear Múltipla):")
+    for i, coef in enumerate(coeficientes):
+        print(f"Coeficiente β{i+1}: {coef:.4f}")
+    print(f"Intercepto β0: {intercepto:.4f}")
+    return modelo, coeficientes, intercepto, previsoes
+
+def grafico_regressao_linear_multipla(X, y):
+    """
+    Função para plotar a Regressão Linear Múltipla em gráfico 3D.
+    
+    Parâmetros:
+    - X: array 2D com duas variáveis independentes.
+    - y: array 1D com variável dependente.
+    
+    Exibe o gráfico 3D com os pontos e o plano ajustado.
+    """
+    # Cria e treina o modelo
+    modelo = LinearRegression()
+    modelo.fit(X, y)
+
+    # Obtém os coeficientes e intercepto
+    b1, b2 = modelo.coef_
+    b0 = modelo.intercept_
+
+    # Cria malha de valores para o plano
+    x_surf, y_surf = np.meshgrid(
+        np.linspace(X[:,0].min(), X[:,0].max(), 10),
+        np.linspace(X[:,1].min(), X[:,1].max(), 10)
+    )
+    
+    # Calcula os valores previstos para a malha (plano)
+    z_surf = b0 + b1 * x_surf + b2 * y_surf
+
+    # Cria o gráfico 3D
+    fig = plt.figure(figsize=(8,6))
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Plota os pontos
+    ax.scatter(X[:,0], X[:,1], y, color='red', label='Dados')
+
+    # Plota o plano
+    ax.plot_surface(x_surf, y_surf, z_surf, color='lightblue', alpha=0.5)
+
+    # Labels
+    ax.set_xlabel('X1')
+    ax.set_ylabel('X2')
+    ax.set_zlabel('Y')
+    ax.set_title('Regressão Linear Múltipla (Plano 3D)')
+    ax.legend()
+
+    plt.show()
+
+##############################
