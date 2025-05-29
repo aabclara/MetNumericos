@@ -75,6 +75,7 @@ def bissecao(f, a, b, tol=1e-6, max_iter=1000):
     while (b - a) / 2 > tol and iteracoes < max_iter:
         c = (a + b) / 2
         if f(c) == 0:
+            print(f"Raiz de f(x) no intervalo é {c:.3f}")
             return c
         elif f(a) * f(c) < 0:
             b = c
@@ -182,12 +183,12 @@ def falsa_posicao(f, a, b, tol=1e-6, max_iter=1000):
             a = c
 
         iteracoes += 1
-
+    # return (a * f(b) - b * f(a)) / (f(b) - f(a)), iteracoes
     c = (a * f(b) - b * f(a)) / (f(b) - f(a))
     print(f"Raiz de f(x) pelo método da falsa posição: {c:.3f} (em {iteracoes} iterações)")
     return c, iteracoes
 
-    return (a * f(b) - b * f(a)) / (f(b) - f(a)), iteracoes
+    
 
 def grafico_falsa_posicao(f, a, b):
     resultado = falsa_posicao(f, a, b)
@@ -241,7 +242,7 @@ def regressao_linear(x, y):
     r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
 
     print(f"Equação ajustada: y = {b0:.4f} + {b1:.4f}x")
-    print(f"Coeficiente de determinação R² = {r2:.4f}")
+    print(f"Coeficiente de determinação R² = {r2:.2f}")
     return reta, r2
 
 def grafico_regressao_linear(x, y):
@@ -312,7 +313,7 @@ def grafico_regressao_polinomial(x, y, grau):
     plt.show()
 
 ###############################
-def regressao_linear_multipla(X, y):
+def regressao_linear_multipla(X, y, retornar=True):
     """
     - X: array 2D (matriz) com variáveis independentes.
     - y: array 1D com variável dependente.
@@ -327,18 +328,28 @@ def regressao_linear_multipla(X, y):
     # Treina o modelo com os dados
     modelo.fit(X, y)
 
-    # Obtém os coeficientes e o intercepto
     coeficientes = modelo.coef_
     intercepto = modelo.intercept_
-
-    # Faz previsões
     previsoes = modelo.predict(X)
 
+    termos = []
+    for i, coef in enumerate(coeficientes):
+        var = f"x{i+1}"
+        sinal = "+" if coef >= 0 else "-"
+        termos.append(f"{sinal} {abs(coef):.4f}*{var}")
+
+    equacao = f"y = {intercepto:.4f} " + " ".join(termos)
+
     print("Modelo ajustado (Regressão Linear Múltipla):")
+    print(equacao)
+
+    print("---- Outros Dados -----")
     for i, coef in enumerate(coeficientes):
         print(f"Coeficiente β{i+1}: {coef:.4f}")
     print(f"Intercepto β0: {intercepto:.4f}")
-    return modelo, coeficientes, intercepto, previsoes
+
+    if retornar == False:
+        return modelo, coeficientes, intercepto, previsoes, equacao
 
 def grafico_regressao_linear_multipla(X, y):
     """
@@ -387,3 +398,32 @@ def grafico_regressao_linear_multipla(X, y):
     plt.show()
 
 ##############################
+def grafico_funcao_simples(f, x_min=-10, x_max=10, titulo="Gráfico de f(x)", num_pontos=500):
+    """
+    Plota o gráfico de uma função f(x) simples no intervalo [x_min, x_max].
+
+    Parâmetros:
+    - f : função (ex: lambda x: x**2 - 4)
+    - x_min : limite inferior do eixo x (padrão: -10)
+    - x_max : limite superior do eixo x (padrão: 10)
+    - titulo : título do gráfico (padrão: "Gráfico de f(x)")
+    - num_pontos : número de pontos a serem usados no gráfico (padrão: 500)
+
+    Exemplo:
+    >>> f = lambda x: x**3 - 2*x - 5
+    >>> grafico_funcao_simples(f, x_min=0, x_max=3)
+    """
+    x = np.linspace(x_min, x_max, num_pontos)
+    y = [f(i) for i in x]
+
+    plt.figure(figsize=(8, 4))
+    plt.plot(x, y, label="f(x)")
+    plt.axhline(0, color='black', linewidth=0.8, linestyle='--')
+    plt.axvline(0, color='black', linewidth=0.8, linestyle='--')
+    plt.grid(True)
+    plt.title(titulo)
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
