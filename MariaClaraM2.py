@@ -28,3 +28,11 @@ def polinomio_lagrange(coordenadas_x, coordenadas_y, x):
     return valor_polinomio_lagrange
 
 ##################################################################################
+
+def divisao_diferencas(x, y):
+    n = len(x)
+    coeficientes = list(y)
+    for j in range(1, n):
+        for i in range(n-1, j-1, -1):
+            coeficientes[i] = (coeficientes[i] - coeficientes[i-1]/(x[i]-x[i-j]))
+    return coeficientes
