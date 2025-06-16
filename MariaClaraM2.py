@@ -36,3 +36,33 @@ def divisao_diferencas(x, y):
         for i in range(n-1, j-1, -1):
             coeficientes[i] = (coeficientes[i] - coeficientes[i-1]/(x[i]-x[i-j]))
     return coeficientes
+
+##################################################################################
+
+def diferencas_divididas(pontos_x, valores_y):
+    n = len(pontos_x)
+    if n != len(valores_y):
+        raise ValueError("Os arrays 'pontos_x' e 'valores_y' devem ter o mesmo tamanho.")
+
+    diferencas = np.full((n, n), np.nan)
+    
+    diferencas[:, 0] = valores_y
+
+
+    for j in range(1, n):  
+        for i in range(n - j):  
+            diferencas[i, j] = (diferencas[i + 1, j - 1] - diferencas[i, j - 1]) / \
+                                      (pontos_x[i + j] - pontos_x[i])
+    return diferencas
+
+resultados = diferencas_divididas(x, y)
+#
+#print("Tabela de Diferenças Divididas Completa:")
+#for linha in resultados:
+#    linha_formatada = []
+#    for elemento in linha:
+#        if np.isnan(elemento):
+#            linha_formatada.append("    X  ") 
+#        else:
+#            linha_formatada.append(f"{elemento:7.3f}")
+#    print(" ".join(linha_formatada))
