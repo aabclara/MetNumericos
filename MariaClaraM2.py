@@ -66,3 +66,40 @@ resultados = diferencas_divididas(x, y)
 #        else:
 #            linha_formatada.append(f"{elemento:7.3f}")
 #    print(" ".join(linha_formatada))
+
+##################################################################################
+
+def sistemas_triangulares(L, C):
+    n = L.shape[0]   
+    x = np.zeros(n) 
+
+    if L[0, 0] == 0:
+        raise ValueError("Elemento L[0,0] é zero, divisão por zero impossível.")
+    x[0] = C[0] / L[0, 0]
+
+    for i in range(1, n):
+        soma = 0
+        for j in range(i):
+            soma += L[i, j] * x[j]
+        if L[i, i] == 0:
+            raise ValueError(f"Elemento L[{i},{i}] é zero, divisão por zero impossível.")
+        x[i] = (C[i] - soma) / L[i, i]
+
+    return x
+
+##################################################################################
+
+def integral(func, inferior, superior, n):
+    if n <= 0:
+        raise ValueError("O número de subintervalos (n) deve ser um inteiro positivo.")
+
+    h = (superior - inferior) / n 
+    soma_areas = func(inferior) + func(superior)
+
+    for i in range(1, n):
+        x_i = inferior + i * h
+        soma_areas += 2 * func(x_i)
+
+    integral_aproximada = (h / 2) * soma_areas
+
+    return integral_aproximada
