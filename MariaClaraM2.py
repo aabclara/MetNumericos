@@ -103,3 +103,56 @@ def integral(func, inferior, superior, n):
     integral_aproximada = (h / 2) * soma_areas
 
     return integral_aproximada
+
+#################################################################################
+
+def decomposicao_lu(matriz_entrada):
+    numero_linhas = matriz_entrada.shape[0]  
+    
+    matriz_inferior_L = np.eye(numero_linhas) 
+    matriz_superior_U = matriz_entrada.copy().astype(float)  
+
+    for coluna_pivo in range(numero_linhas - 1):  
+        elemento_pivo = matriz_superior_U[coluna_pivo, coluna_pivo]
+
+        if elemento_pivo == 0:
+            print(f"Erro: Elemento pivô zero na posição ({coluna_pivo}, {coluna_pivo}). "
+                  "A decomposição LU pode não ser possível sem pivoteamento.")
+            return None, None
+
+        for linha_atual in range(coluna_pivo + 1, numero_linhas):  
+            fator_multiplicador = matriz_superior_U[linha_atual, coluna_pivo] / elemento_pivo
+            
+            matriz_inferior_L[linha_atual, coluna_pivo] = fator_multiplicador
+            
+            matriz_superior_U[linha_atual, coluna_pivo:] = matriz_superior_U[linha_atual, coluna_pivo:] - fator_multiplicador * matriz_superior_U[coluna_pivo, coluna_pivo:]
+            
+    return matriz_inferior_L, matriz_superior_U
+
+#################################################################################
+
+def calcular_determinante(matriz_entrada):
+    num_linhas, num_colunas = matriz_entrada.shape
+    if num_linhas != num_colunas:
+        print("Erro: O determinante só pode ser calculado para matrizes quadradas.")
+        return None
+    
+    matriz_temp = matriz_entrada.copy().astype(float)
+    
+    determinante = 1.0 
+
+    for k in range(num_linhas): 
+        elemento_pivo = matriz_temp[k, k]
+
+        if abs(elemento_pivo) < 1e-9: 
+            print(f"Aviso: Elemento pivô muito pequeno ou zero na posição ({k}, {k}). "
+                  "A matriz pode ser singular (determinante ~ 0).")
+            return 0.0 
+
+        determinante *= elemento_pivo 
+        for i in range(k + 1, num_linhas):
+            fator_multiplicador = matriz_temp[i, k] / elemento_pivo
+            
+            matriz_temp[i, k:] = matriz_temp[i, k:] - fator_multiplicador * matriz_temp[k, k:]
+            
+    return determinante
