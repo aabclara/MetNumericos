@@ -87,6 +87,44 @@ def sistemas_triangulares(L, C):
 
     return x
 
+def sistemas_triangularesInferior(L, C):
+    n = L.shape[0]   
+    x = np.zeros(n) 
+
+    if L[0, 0] == 0:
+        raise ValueError("Elemento L[0,0] é zero, divisão por zero impossível.")
+    x[0] = C[0] / L[0, 0]
+
+    for i in range(1, n):
+        soma = 0
+        for j in range(i):
+            soma += L[i, j] * x[j]
+        if L[i, i] == 0:
+            raise ValueError(f"Elemento L[{i},{i}] é zero, divisão por zero impossível.")
+        x[i] = (C[i] - soma) / L[i, i]
+
+    return x
+
+def sistema_triangular_superior(U, C):
+    n = U.shape[0]  
+    x = np.zeros(n) 
+
+    for i in range(n - 2, -1, -1):
+        soma = 0
+
+        for j in range(i + 1, n):
+            soma += U[i, j] * x[j]
+
+        if U[i, i] == 0:
+            raise ValueError(f"Elemento U[{i},{i}] na diagonal é zero, divisão por zero impossível.")
+        x[i] = (C[i] - soma) / U[i, i]
+
+    return x
+
+# solucao2 = sistema_triangular_superior(U_exemplo2, C_exemplo2)
+# print("A solução do sistema linear triangular superior (x) é:")
+# print(solucao2)
+
 ##################################################################################
 
 def integral(func, inferior, superior, n):
@@ -156,3 +194,6 @@ def calcular_determinante(matriz_entrada):
             matriz_temp[i, k:] = matriz_temp[i, k:] - fator_multiplicador * matriz_temp[k, k:]
             
     return determinante
+
+#################################################################################
+
