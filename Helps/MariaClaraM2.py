@@ -196,4 +196,22 @@ def calcular_determinante(matriz_entrada):
     return determinante
 
 #################################################################################
+# Interpolação
+# - Newton: Diferenças Divididas
+#       - Identificar como preencher a tabela das diferenças divididas usando a função.
+# - Polinomio de Lagrange
+# Qual o polinômio
+# Valor do polinômio para um dado X.
+
+# Solução de Sistemas de Equações 
+# Eliminação de Gauss: Transformar a matriz em um sistema triangular superior ou inferior
+#   - Matrizes e operações elementares
+#   - Substituição sucessiva ou retrosubstituição
+# Decomposição LU
+#   - Qualquer matriz definida positiva
+#       - Elemento da diagonal é 0
+# Decomposição de Cholesky
+#   - Qualquer matriz definida positiva e simêtrica
+#
+# Verificar se a matriz é definida positiva por cholesky ou LU: Algum elemento da diagonal na decomposição é 0
 
